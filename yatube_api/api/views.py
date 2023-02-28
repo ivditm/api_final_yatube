@@ -8,14 +8,14 @@ from rest_framework.pagination import LimitOffsetPagination
 
 
 from .permissions import IsOwnerOrReadOnly
-from posts.models import Comment, Follow, Group, Post
+from posts.models import Comment, Group, Post
 from .serializers import (CommentSerializer, FollowSerializer,
                           GroupSerializer, PostSerializer)
 
 
-class MyViewSet(mixins.CreateModelMixin,
-                mixins.ListModelMixin,
-                viewsets.GenericViewSet):
+class CreateOrListViewSet(mixins.CreateModelMixin,
+                          mixins.ListModelMixin,
+                          viewsets.GenericViewSet):
     """Кастомный вьюсет."""
     pass
 
@@ -30,12 +30,11 @@ class CommentViewSet(viewsets.ModelViewSet):
         return get_object_or_404(Post, pk=post_id)
 
     def get_queryset(self):
-        post = self.__find_post()
-        return post.comments.all()
+        return self.__find_post().comments.all()
 
     def perform_create(self, serializer):
-        post = self.__find_post()
-        serializer.save(author=self.request.user, post=post)
+        # post =
+        serializer.save(author=self.request.user, post=self.__find_post())
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
@@ -55,8 +54,8 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-class FollowViewSet(MyViewSet):
-    queryset = Follow.objects.all()
+class FollowViewSet(CreateOrListViewSet):
+    # queryset = Follow.objects.all()
     serializer_class = FollowSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)

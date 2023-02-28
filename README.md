@@ -5,12 +5,12 @@ api final
 Учебный проект для отработки API
 
 ### Технологии
-Django 2.2
-Django Rest Framework
-Python 3.7
-Pytest
-Simple-JWT
-SQLite3
+- Django 2.2
+- Django Rest Framework
+- Python 3.7
+- Pytest
+- Simple-JWT
+- SQLite3
 
 ### Документация
 Доступна по адресу ```/redoc/```
@@ -30,7 +30,7 @@ cd api_final_yatube
 Cоздать и активировать виртуальное окружение:
 
 ```
-python -m venv env
+python -m venv venv
 ```
 
 ```
@@ -50,11 +50,11 @@ pip install -r requirements.txt
 Выполнить миграции:
 
 ```
-python3 manage.py migrate
+python manage.py migrate
 ```
 
 Запустить проект:
 
 ```
-python3 manage.py runserver
+python manage.py runserver
 ```
