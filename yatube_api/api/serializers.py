@@ -8,6 +8,7 @@ from posts.models import Comment, Follow, Group, Post
 
 
 ERROR_MESSAGE = 'нельзя подписываться на самого себя!'
+ERROR_MESSAGE_TOGETHER = 'нельзя два раза подписаться на одного чела'
 
 User = get_user_model()
 
@@ -52,7 +53,8 @@ class FollowSerializer(serializers.ModelSerializer):
         validators = [
             UniqueTogetherValidator(
                 queryset=Follow.objects.all(),
-                fields=['user', 'following']
+                fields=['user', 'following'],
+                message=ERROR_MESSAGE_TOGETHER
             )
         ]
 

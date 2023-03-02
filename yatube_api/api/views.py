@@ -8,7 +8,7 @@ from rest_framework.pagination import LimitOffsetPagination
 
 
 from .permissions import IsOwnerOrReadOnly
-from posts.models import Comment, Group, Post
+from posts.models import Group, Post
 from .serializers import (CommentSerializer, FollowSerializer,
                           GroupSerializer, PostSerializer)
 
@@ -21,33 +21,32 @@ class CreateOrListViewSet(mixins.CreateModelMixin,
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = (IsOwnerOrReadOnly,)
 
     def __find_post(self):
-        post_id = self.kwargs.get("post_id")
-        return get_object_or_404(Post, pk=post_id)
+        return get_object_or_404(Post,
+                                 pk=self.kwargs.get("post_id"))
 
     def get_queryset(self):
         return self.__find_post().comments.all()
 
     def perform_create(self, serializer):
-        # post =
-        serializer.save(author=self.request.user, post=self.__find_post())
+        serializer.save(author=self.request.user,
+                        post=self.__find_post())
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = (IsOwnerOrReadOnly,)
 
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [IsOwnerOrReadOnly,
-                          permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = (IsOwnerOrReadOnly,
+                          permissions.IsAuthenticatedOrReadOnly)
     pagination_class = LimitOffsetPagination
 
     def perform_create(self, serializer):
@@ -55,7 +54,6 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class FollowViewSet(CreateOrListViewSet):
-    # queryset = Follow.objects.all()
     serializer_class = FollowSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
